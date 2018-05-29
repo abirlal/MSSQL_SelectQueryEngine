@@ -16,11 +16,11 @@ CREATE PROCEDURE [dbo].[SP_select_query_engine]
        @where VARCHAR(2000), 
        @orWhere VARCHAR(2000), 
        @inValues VARCHAR(2000),
-          @customClause VARCHAR(1000),
-          @orderBy VARCHAR(255), 
-          @groupBy VARCHAR(255),
-          @offset VARCHAR(255), 
-          @next VARCHAR(255)
+       @customClause VARCHAR(1000),
+       @orderBy VARCHAR(255), 
+       @groupBy VARCHAR(255),
+       @offset VARCHAR(255), 
+       @next VARCHAR(255)
 AS
 BEGIN
        DECLARE @query VARCHAR(4000), @strAllItems VARCHAR(4000)
@@ -35,13 +35,13 @@ BEGIN
        SET @delimiter1 = '#'
        IF (@columns != '*') BEGIN
               SELECT @start = 1, @end = CHARINDEX(@delimiter1, @strAllItems) 
-        WHILE @start < LEN(@strAllItems) + 1 BEGIN 
-                           IF @end = 0  SET @end = LEN(@strAllItems) + 1
+              WHILE @start < LEN(@strAllItems) + 1 BEGIN 
+                     IF @end = 0  SET @end = LEN(@strAllItems) + 1
                            SET @strColumn=SUBSTRING(@strAllItems, @start, @end - @start) 
-                                  SET @query = @query + @strColumn +', '
-                SET @start = @end + 1 
-            SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
-        END
+                           SET @query = @query + @strColumn +', '
+                     SET @start = @end + 1 
+                     SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
+              END
               SET @query=SUBSTRING(@query, 0, LEN(@query)) 
               SET @query = @query + ' FROM '
        END
@@ -55,16 +55,16 @@ BEGIN
        IF (@tables != '0') BEGIN
               SET @strAllItems = @tables 
               SELECT @start = 1, @end = CHARINDEX(@delimiter1, @strAllItems) 
-        WHILE @start < LEN(@strAllItems) + 1 BEGIN 
-                           IF @end = 0  SET @end = LEN(@strAllItems) + 1
+              WHILE @start < LEN(@strAllItems) + 1 BEGIN 
+                     IF @end = 0  SET @end = LEN(@strAllItems) + 1
                            SET @strTbl=SUBSTRING(@strAllItems, @start, @end - @start) 
-                                  SET @query = @query  + @strTbl +', ' 
-                SET @start = @end + 1 
-            SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
-        END
+                           SET @query = @query  + @strTbl +', ' 
+                     SET @start = @end + 1 
+                     SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
+              END
               SET @query=SUBSTRING(@query, 0, LEN(@query)) 
               
-        END
+       END
        
 
        IF(@where !='0') BEGIN
@@ -76,38 +76,38 @@ BEGIN
               SET @delimiter4 = '`'
               SELECT @start = 1, @end = CHARINDEX(@delimiter1, @strAllItems) 
               WHILE @start < LEN(@strAllItems) + 1 BEGIN 
-                                  IF @end = 0  SET @end = LEN(@strAllItems) + 1
-                                  SET @strColumn=SUBSTRING(@strAllItems, @start, @end - @start) 
-                                  SELECT @start2 = 1, @end2 = CHARINDEX(@delimiter2, @strColumn)
-                                                         SET @strColumnOperator=SUBSTRING(@strColumn, @start2, @end2) 
-                                  SELECT @start3 = 1, @end3 = CHARINDEX(@delimiter3, @strColumnOperator) 
-                                  SET @strColType=SUBSTRING(@strColumnOperator, @start3, @end3) 
-                                  SET @strOperator=SUBSTRING(@strColumnOperator, @end3 + 1, LEN(@strColumnOperator) ) 
-                                  SET @strOperator=SUBSTRING(@strOperator, 0, LEN(@strOperator) ) 
-                                  SET @colVal=SUBSTRING(@strColumn, @end2 + 1 , @end2 ) 
-                                  SELECT @start4 = 1, @end4 = CHARINDEX(@delimiter4, @strColType) 
-                                  SET @colType=SUBSTRING(@strColType, @start4, @end4)
-                                  SET @colType=SUBSTRING(@colType, 0, LEN(@colType) ) 
-                                  SET @colName=SUBSTRING(@strColType, @end4 + 1, LEN(@strColType))
-                                  SET @colName=SUBSTRING(@colName, 0, LEN(@colName) ) 
-                                  IF (@colType = 'string') BEGIN
-                                         SET @query = @query + @colName + @strOperator + '''' + @colVal + ''' AND '
-                                  END 
-                                  ELSE BEGIN
-                                         SET @query = @query + @colName + @strOperator + @colVal + ' AND '
-                                  END
-                           SET @start = @end + 1 
-                          SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
+                     IF @end = 0  SET @end = LEN(@strAllItems) + 1
+                     SET @strColumn=SUBSTRING(@strAllItems, @start, @end - @start) 
+                     SELECT @start2 = 1, @end2 = CHARINDEX(@delimiter2, @strColumn)
+                     SET @strColumnOperator=SUBSTRING(@strColumn, @start2, @end2) 
+                     SELECT @start3 = 1, @end3 = CHARINDEX(@delimiter3, @strColumnOperator) 
+                     SET @strColType=SUBSTRING(@strColumnOperator, @start3, @end3) 
+                     SET @strOperator=SUBSTRING(@strColumnOperator, @end3 + 1, LEN(@strColumnOperator) ) 
+                     SET @strOperator=SUBSTRING(@strOperator, 0, LEN(@strOperator) ) 
+                     SET @colVal=SUBSTRING(@strColumn, @end2 + 1 , @end2 ) 
+                     SELECT @start4 = 1, @end4 = CHARINDEX(@delimiter4, @strColType) 
+                     SET @colType=SUBSTRING(@strColType, @start4, @end4)
+                     SET @colType=SUBSTRING(@colType, 0, LEN(@colType) ) 
+                     SET @colName=SUBSTRING(@strColType, @end4 + 1, LEN(@strColType))
+                     SET @colName=SUBSTRING(@colName, 0, LEN(@colName) ) 
+                     IF (@colType = 'string') BEGIN
+                            SET @query = @query + @colName + @strOperator + '''' + @colVal + ''' AND '
+                     END 
+                     ELSE BEGIN
+                            SET @query = @query + @colName + @strOperator + @colVal + ' AND '
+                     END
+                     SET @start = @end + 1 
+                     SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
               END
               SET @query=SUBSTRING(@query, 0, LEN(@query) - 2) 
         END
         IF(@orWhere !='0') BEGIN
-                       IF(@where ='0') BEGIN
-                                  SET @query = @query + ' WHERE '
-                       END
-                       ELSE BEGIN
-                                  SET @query = @query + ' OR '
-                       END
+              IF(@where ='0') BEGIN
+                    SET @query = @query + ' WHERE '
+              END
+              ELSE BEGIN
+                    SET @query = @query + ' OR '
+              END
               SET @strAllItems = @orWhere
               SET @delimiter1 = '#'
               SET @delimiter2 = '~'
@@ -115,68 +115,68 @@ BEGIN
               SET @delimiter4 = '`'
               SELECT @start = 1, @end = CHARINDEX(@delimiter1, @strAllItems) 
               WHILE @start < LEN(@strAllItems) + 1 BEGIN 
-                                  IF @end = 0  SET @end = LEN(@strAllItems) + 1
-                                  SET @strColumn=SUBSTRING(@strAllItems, @start, @end - @start) 
-                                  SELECT @start2 = 1, @end2 = CHARINDEX(@delimiter2, @strColumn)
-                                                         SET @strColumnOperator=SUBSTRING(@strColumn, @start2, @end2) 
-                                  SELECT @start3 = 1, @end3 = CHARINDEX(@delimiter3, @strColumnOperator) 
-                                  SET @strColType=SUBSTRING(@strColumnOperator, @start3, @end3) 
-                                  SET @strOperator=SUBSTRING(@strColumnOperator, @end3 + 1, LEN(@strColumnOperator) ) 
-                                  SET @strOperator=SUBSTRING(@strOperator, 0, LEN(@strOperator) ) 
-                                  SET @colVal=SUBSTRING(@strColumn, @end2 + 1 , @end2 ) 
-                                  SELECT @start4 = 1, @end4 = CHARINDEX(@delimiter4, @strColType) 
-                                  SET @colType=SUBSTRING(@strColType, @start4, @end4)
-                                  SET @colType=SUBSTRING(@colType, 0, LEN(@colType) ) 
-                                  SET @colName=SUBSTRING(@strColType, @end4 + 1, LEN(@strColType))
-                                  SET @colName=SUBSTRING(@colName, 0, LEN(@colName) ) 
-                                  IF (@colType = 'string') BEGIN
-                                         SET @query = @query + @colName + @strOperator + '''' + @colVal + ''' OR '
-                                  END 
-                                  ELSE BEGIN
-                                         SET @query = @query + @colName + @strOperator + @colVal + ' OR '
-                                  END
-                           SET @start = @end + 1 
-                          SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
+                    IF @end = 0  SET @end = LEN(@strAllItems) + 1
+                    SET @strColumn=SUBSTRING(@strAllItems, @start, @end - @start) 
+                    SELECT @start2 = 1, @end2 = CHARINDEX(@delimiter2, @strColumn)
+                                           SET @strColumnOperator=SUBSTRING(@strColumn, @start2, @end2) 
+                    SELECT @start3 = 1, @end3 = CHARINDEX(@delimiter3, @strColumnOperator) 
+                    SET @strColType=SUBSTRING(@strColumnOperator, @start3, @end3) 
+                    SET @strOperator=SUBSTRING(@strColumnOperator, @end3 + 1, LEN(@strColumnOperator) ) 
+                    SET @strOperator=SUBSTRING(@strOperator, 0, LEN(@strOperator) ) 
+                    SET @colVal=SUBSTRING(@strColumn, @end2 + 1 , @end2 ) 
+                    SELECT @start4 = 1, @end4 = CHARINDEX(@delimiter4, @strColType) 
+                    SET @colType=SUBSTRING(@strColType, @start4, @end4)
+                    SET @colType=SUBSTRING(@colType, 0, LEN(@colType) ) 
+                    SET @colName=SUBSTRING(@strColType, @end4 + 1, LEN(@strColType))
+                    SET @colName=SUBSTRING(@colName, 0, LEN(@colName) ) 
+                    IF (@colType = 'string') BEGIN
+                           SET @query = @query + @colName + @strOperator + '''' + @colVal + ''' OR '
+                    END 
+                    ELSE BEGIN
+                           SET @query = @query + @colName + @strOperator + @colVal + ' OR '
+                    END
+                    SET @start = @end + 1 
+                    SET @end = CHARINDEX(@delimiter1, @strAllItems, @start)
               END
               SET @query=SUBSTRING(@query, 0, LEN(@query) - 2) 
         END
               IF(@customClause !='0') BEGIN                          
-                           IF(@orWhere ='0' and @where ='0') BEGIN
-                                  SET @query = @query + ' WHERE ' + @customClause + ' '
-                           END
-                           ELSE BEGIN
-                                  SET @query = @query + ' AND ' + @customClause + ' '
-                           END                  
+                    IF(@orWhere ='0' and @where ='0') BEGIN
+                           SET @query = @query + ' WHERE ' + @customClause + ' '
+                    END
+                    ELSE BEGIN
+                           SET @query = @query + ' AND ' + @customClause + ' '
+                    END                  
               END
               IF(@inValues !='0') BEGIN                       
-                           IF(@orWhere ='0' AND @where ='0' AND @customClause ='0') BEGIN
-                                  SET @query = @query + ' WHERE '
-                           END
-                           ELSE BEGIN
-                                  SET @query = @query + ' AND '
-                           END                        
-                           SET @strAllItems  = @inValues
-                           SET @delimiter2 = '~'
+                    IF(@orWhere ='0' AND @where ='0' AND @customClause ='0') BEGIN
+                           SET @query = @query + ' WHERE '
+                    END
+                    ELSE BEGIN
+                           SET @query = @query + ' AND '
+                    END                        
+                    SET @strAllItems  = @inValues
+                    SET @delimiter2 = '~'
                 SELECT @start2 = 1, @end2 = CHARINDEX(@delimiter2, @strAllItems)
-                           SET @strColumn=SUBSTRING(@strAllItems, @start2, @end2 -1)
-                           -- SET @strColumn=SUBSTRING(@strAllItems, @start2, @end2)
-                           SET @colVal=SUBSTRING(@strAllItems, @end2+1, LEN(@strAllItems))
-                           print '@strColumn : ' + @strColumn + '  @strVal : ' + @colVal
-                           SET @query = @query + @strColumn + ' IN (' +  @colVal + ') '
+                    SET @strColumn=SUBSTRING(@strAllItems, @start2, @end2 -1)
+                    -- SET @strColumn=SUBSTRING(@strAllItems, @start2, @end2)
+                    SET @colVal=SUBSTRING(@strAllItems, @end2+1, LEN(@strAllItems))
+                    print '@strColumn : ' + @strColumn + '  @strVal : ' + @colVal
+                    SET @query = @query + @strColumn + ' IN (' +  @colVal + ') '
               END
               IF(@orderBy !='0') BEGIN                        
-                           SET @query = @query + ' ORDER BY ' +  @orderBy + ' '
+                    SET @query = @query + ' ORDER BY ' +  @orderBy + ' '
               END
               IF(@groupBy !='0') BEGIN                        
-                           SET @query = @query + ' GROUP BY ' +  @groupBy + ' '
+                    SET @query = @query + ' GROUP BY ' +  @groupBy + ' '
               END
               IF(@offset !='-' AND @next !='-') BEGIN
-                     IF(@orderBy !='0') BEGIN
-                           SET @query = @query + ' OFFSET ' + @offset + ' ROWS FETCH NEXT ' + @next + ' ROWS ONLY '
-                     END 
+                    IF(@orderBy !='0') BEGIN
+                            SET @query = @query + ' OFFSET ' + @offset + ' ROWS FETCH NEXT ' + @next + ' ROWS ONLY '
+                    END 
               END
               
--- print @query
+--     print @query
        EXEC(@query)
 END
 
